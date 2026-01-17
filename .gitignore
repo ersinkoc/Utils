@@ -18,7 +18,7 @@ c8.config.json
 jest.config.js
 
 # Documentation (internal docs, keep only README for npm)
-docs/
+/docs/
 SPECIFICATION.md
 IMPLEMENTATION.md
 TASKS.md
