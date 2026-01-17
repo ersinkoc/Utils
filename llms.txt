@@ -1,0 +1,115 @@
+# @oxog/utils
+
+> Zero-dependency, type-safe utility functions for Node.js backends
+
+## Install
+
+npm install @oxog/utils
+
+## Basic Usage
+
+import { get, set, groupBy, camelCase } from '@oxog/utils';
+
+const user = { name: 'Ersin', address: { city: 'Istanbul' } };
+const city = get(user, 'address.city');
+const updated = set(user, 'name', 'Ali');
+
+## API Summary
+
+### Object Functions
+- `get(obj, path, default?)` - Safe deep property access
+- `set(obj, path, value)` - Immutable property setter
+- `setMut(obj, path, value)` - Mutable property setter
+- `has(obj, path)` - Check if path exists
+- `pick(obj, keys)` - Select specific keys
+- `omit(obj, keys)` - Exclude specific keys
+- `merge(target, ...sources)` - Safe shallow merge
+- `keys(obj)` - Type-safe Object.keys()
+- `values(obj)` - Type-safe Object.values()
+- `entries(obj)` - Type-safe Object.entries()
+- `fromEntries(entries)` - Type-safe Object.fromEntries()
+
+### Array Functions
+- `groupBy(arr, key)` - Group by property
+- `keyBy(arr, key)` - Index by property
+- `chunk(arr, size)` - Split into chunks
+- `uniq(arr)` - Remove duplicates
+- `uniqBy(arr, key)` - Remove duplicates by key
+- `flatten(arr, depth?)` - Flatten nested arrays
+- `compact(arr)` - Remove falsy values
+- `first(arr, n?)` - Get first n elements
+- `last(arr, n?)` - Get last n elements
+- `sample(arr, n?)` - Random sample from array
+
+### String Functions
+- `camelCase(str)` - To camelCase
+- `kebabCase(str)` - To kebab-case
+- `snakeCase(str)` - To snake_case
+- `pascalCase(str)` - To PascalCase
+- `capitalize(str)` - Capitalize first letter
+- `truncate(str, length, suffix?)` - Truncate with ellipsis
+- `slugify(str)` - URL-safe slug (Turkish support)
+- `template(str, data)` - String interpolation
+
+### Optional Plugins
+- `@oxog/utils/deep` - cloneDeep, mergeDeep, isEqual, diff
+- `@oxog/utils/async` - debounce, throttle, sleep, retry, timeout
+- `@oxog/utils/guard` - isEmpty, isNil, isPlainObject, isArray, isString, isNumber, isFunction, isDate
+- `@oxog/utils/transform` - mapKeys, mapValues, invert, flip, compose, pipe
+
+## Common Patterns
+
+### Safe Property Access
+const value = get(data, 'deeply.nested.value', 'default');
+
+### Immutable Update
+const newObj = set(obj, 'user.name', 'New Name');
+
+### Group Array Items
+const byCategory = groupBy(products, 'category');
+
+### Array Chunking
+const pages = chunk(items, 10);
+
+### Remove Duplicates
+const unique = uniq(duplicates);
+
+### String Case Conversion
+const camel = camelCase('hello-world');
+const slug = slugify('Türkçe Başlık');
+
+### Deep Clone
+const clone = cloneDeep(obj);
+
+### Async Debounce
+const debounced = debounce(save, 300);
+
+### Type Guarding
+if (isEmpty(items)) { ... }
+if (isNil(value)) { ... }
+if (isPlainObject(data)) { ... }
+
+## Errors
+
+| Code | Meaning | Solution |
+|------|---------|----------|
+| `INVALID_PATH` | Path string is malformed | Check path syntax |
+| `CIRCULAR_REF` | Circular reference in cloneDeep | Use with objects that have circular refs |
+| `TIMEOUT` | Operation timed out | Increase timeout or optimize |
+| `PLUGIN_ALREADY_REGISTERED` | Plugin name conflict | Use unique plugin names |
+| `PLUGIN_NOT_FOUND` | Requested plugin doesn't exist | Check plugin name or register first |
+| `PLUGIN_DEPENDENCY_MISSING` | Required plugin not loaded | Load dependency plugin first |
+
+## Key Differences from Lodash
+
+- `isEmpty()` ONLY works on collections (arrays, objects, Map, Set)
+- `isNumber()` returns false for NaN
+- Zero runtime dependencies
+- Immutable by default
+- Full TypeScript inference
+- Built for Node.js backends
+
+## Links
+
+- Docs: https://utils.oxog.dev
+- GitHub: https://github.com/ersinkoc/utils

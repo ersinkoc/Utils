@@ -1,0 +1,19 @@
+{
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "node_modules/**",
+    "__tests__/**",
+    "dist/**",
+    "coverage/**",
+    "*.config.*",
+    "*.test.ts",
+    "src/**/*.test.ts"
+  ],
+  "exclude-after-remap": false,
+  "skipFull": false,
+  "reporter": ["text", "lcov", "json"],
+  "lines": 99,
+  "functions": 100,
+  "branches": 95,
+  "statements": 99
+}

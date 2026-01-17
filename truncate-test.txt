@@ -1,0 +1,6 @@
+const truncate = (str: string, length: number, suffix = '...') => {
+  if (str.length <= length) return str;
+  return str.slice(0, length - suffix.length) + suffix;
+};
+
+console.log(truncate('Hello World', 5));
