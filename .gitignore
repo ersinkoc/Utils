@@ -7,10 +7,23 @@ node_modules/
 dist/
 dist-ssr/
 *.local
+website/dist/
+website/node_modules/
 
 # Testing
+__tests__/
 coverage/
 .nyc_output/
+c8.config.json
+jest.config.js
+
+# Documentation (internal docs, keep only README for npm)
+docs/
+SPECIFICATION.md
+IMPLEMENTATION.md
+TASKS.md
+oxog-utils-claude-code-prompt.md
+examples/
 
 # IDE
 .vscode/
