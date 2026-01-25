@@ -8,6 +8,10 @@ import {
   PluginNotFoundError,
   PluginDependencyMissingError,
   MaxRetriesExceededError,
+  CircularDependencyError,
+  PluginInitializationError,
+  KernelAlreadyInitializedError,
+  KernelInitializingError,
 } from '../src/errors.js';
 
 describe('Error Classes', () => {
@@ -90,6 +94,45 @@ describe('Error Classes', () => {
     });
   });
 
+  describe('CircularDependencyError', () => {
+    it('should create error with cycle in message', () => {
+      const error = new CircularDependencyError(['a', 'b', 'c', 'a']);
+      expect(error.message).toBe('Circular dependency detected: a -> b -> c -> a');
+      expect(error.code).toBe('CIRCULAR_DEPENDENCY');
+      expect(error.name).toBe('CircularDependencyError');
+    });
+  });
+
+  describe('PluginInitializationError', () => {
+    it('should create error with plugin name and cause', () => {
+      const cause = new Error('Original error');
+      const error = new PluginInitializationError('my-plugin', cause);
+      expect(error.message).toBe('Plugin "my-plugin" failed to initialize: Original error');
+      expect(error.code).toBe('PLUGIN_INIT_FAILED');
+      expect(error.name).toBe('PluginInitializationError');
+      expect(error.pluginName).toBe('my-plugin');
+      expect(error.cause).toBe(cause);
+    });
+  });
+
+  describe('KernelAlreadyInitializedError', () => {
+    it('should create error with default message', () => {
+      const error = new KernelAlreadyInitializedError();
+      expect(error.message).toBe('Kernel is already initialized');
+      expect(error.code).toBe('KERNEL_ALREADY_INITIALIZED');
+      expect(error.name).toBe('KernelAlreadyInitializedError');
+    });
+  });
+
+  describe('KernelInitializingError', () => {
+    it('should create error with default message', () => {
+      const error = new KernelInitializingError();
+      expect(error.message).toBe('Kernel is currently initializing');
+      expect(error.code).toBe('KERNEL_INITIALIZING');
+      expect(error.name).toBe('KernelInitializingError');
+    });
+  });
+
   describe('Error inheritance', () => {
     it('should allow instanceof checks', () => {
       expect(new InvalidPathError('test') instanceof UtilsError).toBe(true);
@@ -101,6 +144,10 @@ describe('Error Classes', () => {
         new PluginDependencyMissingError('a', 'b') instanceof UtilsError
       ).toBe(true);
       expect(new MaxRetriesExceededError(3) instanceof UtilsError).toBe(true);
+      expect(new CircularDependencyError(['a', 'b']) instanceof UtilsError).toBe(true);
+      expect(new PluginInitializationError('p', new Error()) instanceof UtilsError).toBe(true);
+      expect(new KernelAlreadyInitializedError() instanceof UtilsError).toBe(true);
+      expect(new KernelInitializingError() instanceof UtilsError).toBe(true);
     });
 
     it('should allow instanceof checks for specific types', () => {
@@ -115,6 +162,14 @@ describe('Error Classes', () => {
         new PluginDependencyMissingError('a', 'b') instanceof PluginDependencyMissingError
       ).toBe(true);
       expect(new MaxRetriesExceededError(3) instanceof MaxRetriesExceededError).toBe(true);
+      expect(new CircularDependencyError(['a']) instanceof CircularDependencyError).toBe(true);
+      expect(
+        new PluginInitializationError('p', new Error()) instanceof PluginInitializationError
+      ).toBe(true);
+      expect(new KernelAlreadyInitializedError() instanceof KernelAlreadyInitializedError).toBe(
+        true
+      );
+      expect(new KernelInitializingError() instanceof KernelInitializingError).toBe(true);
     });
   });
 });

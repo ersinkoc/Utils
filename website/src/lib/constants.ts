@@ -2,7 +2,7 @@ export const PACKAGE_NAME = '@oxog/utils';
 export const PACKAGE_SHORT_NAME = 'utils';
 export const GITHUB_REPO = 'ersinkoc/utils';
 export const NPM_PACKAGE = '@oxog/utils';
-export const VERSION = '1.0.0';
+export const VERSION = '1.0.1';
 export const DESCRIPTION = 'Zero-dependency, type-safe utility functions for Node.js backends';
 export const DOMAIN = 'utils.oxog.dev';
 export const AUTHOR = 'Ersin KOC';
@@ -39,6 +39,7 @@ export const DOCS_NAV = [
       { label: 'Async Utilities', href: '/plugins#async' },
       { label: 'Type Guards', href: '/plugins#guard' },
       { label: 'Transform', href: '/plugins#transform' },
+      { label: 'Kernel', href: '/plugins#kernel' },
     ],
   },
 ];
@@ -72,13 +73,13 @@ export const FEATURES = [
   {
     icon: 'TestTube',
     title: 'Well-Tested',
-    description: '216 tests with 100% success rate and 99%+ coverage.',
+    description: '247 tests with 100% success rate and 98%+ coverage.',
   },
 ];
 
 export const STATS = [
   { label: 'Zero', sublabel: 'Dependencies' },
-  { label: '216', sublabel: 'Tests Passed' },
-  { label: '99%+', sublabel: 'Coverage' },
+  { label: '247', sublabel: 'Tests Passed' },
+  { label: '98%+', sublabel: 'Coverage' },
   { label: '100%', sublabel: 'TypeScript' },
 ];

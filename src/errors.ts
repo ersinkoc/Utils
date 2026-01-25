@@ -81,3 +81,48 @@ export class MaxRetriesExceededError extends UtilsError {
     this.name = 'MaxRetriesExceededError';
   }
 }
+
+/**
+ * Error thrown when circular dependency is detected between plugins.
+ */
+export class CircularDependencyError extends UtilsError {
+  constructor(cycle: string[]) {
+    super(`Circular dependency detected: ${cycle.join(' -> ')}`, 'CIRCULAR_DEPENDENCY');
+    this.name = 'CircularDependencyError';
+  }
+}
+
+/**
+ * Error thrown when plugin initialization fails.
+ */
+export class PluginInitializationError extends UtilsError {
+  readonly pluginName: string;
+  override readonly cause: Error;
+
+  constructor(pluginName: string, cause: Error) {
+    super(`Plugin "${pluginName}" failed to initialize: ${cause.message}`, 'PLUGIN_INIT_FAILED');
+    this.name = 'PluginInitializationError';
+    this.pluginName = pluginName;
+    this.cause = cause;
+  }
+}
+
+/**
+ * Error thrown when kernel is already initialized.
+ */
+export class KernelAlreadyInitializedError extends UtilsError {
+  constructor() {
+    super('Kernel is already initialized', 'KERNEL_ALREADY_INITIALIZED');
+    this.name = 'KernelAlreadyInitializedError';
+  }
+}
+
+/**
+ * Error thrown when kernel is currently initializing (race condition prevention).
+ */
+export class KernelInitializingError extends UtilsError {
+  constructor() {
+    super('Kernel is currently initializing', 'KERNEL_INITIALIZING');
+    this.name = 'KernelInitializingError';
+  }
+}

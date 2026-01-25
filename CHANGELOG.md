@@ -2,6 +2,44 @@
 
 All notable changes to @oxog/utils will be documented in this file.
 
+## [1.0.1] - 2026-01-25
+
+### Added
+- **Plugin State Tracking**: New `PluginState` type (`registered`, `initializing`, `active`, `error`, `destroyed`)
+- **Scoped Event Bus**: Automatic listener cleanup when plugins are unregistered
+  - `ScopedEventBus` class for plugin-specific event handling
+  - `EventBus.onScoped()`, `EventBus.removeScope()`, `EventBus.hasScope()` methods
+- **Kernel Options**: Constructor now accepts `KernelOptions<TContext>` for initial context
+- **New API Methods**:
+  - `kernel.getPluginState(name)` - Get plugin lifecycle state
+  - `kernel.getState()` - Get kernel state (`idle`, `initializing`, `initialized`, `destroyed`)
+  - `kernel.isInitialized()` - Check if kernel is initialized
+  - `kernel.getScopedEventBus(name)` - Get scoped event bus for a plugin
+- **New Error Classes**:
+  - `CircularDependencyError` - Thrown when circular dependency detected
+  - `PluginInitializationError` - Thrown with cause when plugin init fails
+  - `KernelAlreadyInitializedError` - Thrown when kernel already initialized
+  - `KernelInitializingError` - Thrown for race condition prevention
+
+### Changed
+- **BREAKING**: `kernel.unregister()` is now async and returns `Promise<void>`
+- **Topological Sort**: Plugins now initialize in dependency order
+- **Rollback Mechanism**: Failed initialization triggers rollback of already-initialized plugins
+- **Race Condition Prevention**: Concurrent `init()` calls are now properly handled
+- **Late Registration**: Plugins registered after `kernel.init()` are automatically initialized
+
+### Fixed
+- Plugins registered after `kernel.init()` now have their `onInit` called
+- Event listeners are automatically cleaned up when plugins are unregistered
+- Circular dependencies are now detected and throw clear errors
+- Partial initialization failures now properly rollback
+
+### Testing
+- Added 23 new test cases for Kernel improvements
+- Added 8 new test cases for ScopedEventBus
+- Added 6 new test cases for new error classes
+- Test coverage: 98.36% statements, 100% functions
+
 ## [1.0.0] - 2026-01-15
 
 ### Added

@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
 [![Node](https://img.shields.io/badge/node-%3E%2018.0.0-green.svg)](https://nodejs.org/)
-[![Tests](https://img.shields.io/badge/tests-216%20passed-success.svg)](https://github.com/ersinkoc/utils)
+[![Tests](https://img.shields.io/badge/tests-247%20passed-success.svg)](https://github.com/ersinkoc/utils)
 
 Modern, tree-shakeable utility library for Node.js backend development with zero dependencies. Full TypeScript support with automatic type inference.
 
@@ -17,7 +17,7 @@ Modern, tree-shakeable utility library for Node.js backend development with zero
 - 🌳 **Tree-shakeable** - Import only what you need
 - 🛡️ **Secure** - Prototype pollution protection built-in
 - ⚡ **Performant** - Immutable by default, optimized for Node.js backends
-- 🧪 **Well-tested** - 216 tests with 100% success rate
+- 🧪 **Well-tested** - 247 tests with 100% success rate
 - 📝 **LLM-native** - Designed for AI/LLM code generation
 
 ## 📦 Installation
@@ -166,6 +166,51 @@ import { compose, pipe, flip } from '@oxog/utils/transform';
 | `compose(...fns)` | Compose functions right-to-left |
 | `pipe(...fns)` | Compose functions left-to-right |
 
+### Kernel (Plugin System)
+
+| Function/Class | Description |
+|----------------|-------------|
+| `Kernel<TContext>` | Micro-kernel for plugin management |
+| `kernel.register(plugin)` | Register a plugin |
+| `kernel.init()` | Initialize all plugins (async) |
+| `kernel.unregister(name)` | Unregister a plugin (async) |
+| `kernel.destroy()` | Destroy kernel and all plugins (async) |
+| `kernel.getPluginState(name)` | Get plugin lifecycle state |
+| `kernel.getScopedEventBus(name)` | Get scoped event bus for plugin |
+| `ScopedEventBus` | Auto-cleanup event bus for plugins |
+
+```typescript
+import { Kernel, type Plugin } from '@oxog/utils';
+
+interface AppContext {
+  db: Database;
+}
+
+const kernel = new Kernel<AppContext>({
+  context: { db: myDatabase }
+});
+
+const loggerPlugin: Plugin<AppContext> = {
+  name: 'logger',
+  version: '1.0.0',
+  install: (kernel) => {
+    // Setup during registration
+  },
+  onInit: async (ctx) => {
+    // Async initialization
+  },
+  onDestroy: async () => {
+    // Cleanup on unregister
+  }
+};
+
+kernel.register(loggerPlugin);
+await kernel.init();
+
+// Plugin states: 'registered' | 'initializing' | 'active' | 'error' | 'destroyed'
+console.log(kernel.getPluginState('logger')); // 'active'
+```
+
 ## 💡 Usage Examples
 
 ### Type-Safe Property Access
@@ -238,10 +283,10 @@ npm run test:watch
 npm run test:coverage
 ```
 
-- **216 tests** with 100% success rate
-- **99.41% statement coverage**
+- **247 tests** with 100% success rate
+- **98.36% statement coverage**
 - **100% function coverage**
-- **95.36% branch coverage**
+- **94.74% branch coverage**
 
 ## 🔧 Scripts
 

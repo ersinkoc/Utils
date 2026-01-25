@@ -1,3 +1,5 @@
+type EventHandler = (...args: any[]) => void;
+
 /**
  * Simple event bus for inter-plugin communication.
  *
@@ -5,7 +7,8 @@
  * communication between different parts of the system.
  */
 export class EventBus {
-  private listeners: Map<string, Set<(...args: any[]) => void>> = new Map();
+  private listeners: Map<string, Set<EventHandler>> = new Map();
+  private scopedHandlers: Map<string, Map<string, Set<EventHandler>>> = new Map();
 
   /**
    * Register an event listener.
@@ -76,5 +79,95 @@ export class EventBus {
    */
   listenerCount(event: string): number {
     return this.listeners.get(event)?.size ?? 0;
+  }
+
+  /**
+   * Register an event listener with a scope (e.g., plugin name).
+   * Scoped listeners can be removed all at once using removeScope().
+   *
+   * @param scope - Scope identifier (e.g., plugin name)
+   * @param event - Event name to listen for
+   * @param handler - Function to call when event is emitted
+   */
+  onScoped(scope: string, event: string, handler: EventHandler): void {
+    // Add to main listeners
+    this.on(event, handler);
+
+    // Track in scoped handlers
+    if (!this.scopedHandlers.has(scope)) {
+      this.scopedHandlers.set(scope, new Map());
+    }
+    const scopeMap = this.scopedHandlers.get(scope)!;
+    if (!scopeMap.has(event)) {
+      scopeMap.set(event, new Set());
+    }
+    scopeMap.get(event)!.add(handler);
+  }
+
+  /**
+   * Remove all listeners registered under a specific scope.
+   * Useful for cleanup when a plugin is unregistered.
+   *
+   * @param scope - Scope identifier to remove
+   */
+  removeScope(scope: string): void {
+    const scopeMap = this.scopedHandlers.get(scope);
+    if (!scopeMap) return;
+
+    for (const [event, handlers] of scopeMap) {
+      for (const handler of handlers) {
+        this.off(event, handler);
+      }
+    }
+    this.scopedHandlers.delete(scope);
+  }
+
+  /**
+   * Check if a scope has any registered listeners.
+   *
+   * @param scope - Scope identifier
+   * @returns True if scope has listeners
+   */
+  hasScope(scope: string): boolean {
+    return this.scopedHandlers.has(scope);
+  }
+}
+
+/**
+ * Scoped event bus wrapper for plugins.
+ * Automatically tracks all listeners under a scope for easy cleanup.
+ */
+export class ScopedEventBus {
+  constructor(
+    private readonly eventBus: EventBus,
+    private readonly scope: string
+  ) {}
+
+  /**
+   * Register an event listener (automatically scoped).
+   */
+  on(event: string, handler: EventHandler): void {
+    this.eventBus.onScoped(this.scope, event, handler);
+  }
+
+  /**
+   * Unregister an event listener.
+   */
+  off(event: string, handler: EventHandler): void {
+    this.eventBus.off(event, handler);
+  }
+
+  /**
+   * Emit an event.
+   */
+  emit(event: string, ...args: any[]): void {
+    this.eventBus.emit(event, ...args);
+  }
+
+  /**
+   * Remove all listeners registered by this scoped bus.
+   */
+  destroy(): void {
+    this.eventBus.removeScope(this.scope);
   }
 }

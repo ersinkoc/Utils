@@ -94,6 +94,59 @@ const result = process(input);
 const pipeline = pipe(parse, validate, format);
 const result = pipeline(input);`;
 
+const kernelPluginCode = `import { Kernel, type Plugin, type PluginState } from '@oxog/utils';
+
+// Define your application context
+interface AppContext {
+  db: Database;
+  cache: CacheService;
+}
+
+// Create kernel with initial context
+const kernel = new Kernel<AppContext>({
+  context: { db: myDatabase, cache: myCache }
+});
+
+// Define a plugin
+const loggerPlugin: Plugin<AppContext> = {
+  name: 'logger',
+  version: '1.0.0',
+  dependencies: [], // optional dependencies
+  install: (kernel) => {
+    // Called immediately when registered
+    console.log('Logger plugin installed');
+  },
+  onInit: async (ctx) => {
+    // Called during kernel.init() - can be async
+    await ctx.db.connect();
+  },
+  onDestroy: async () => {
+    // Called on unregister - cleanup resources
+  },
+  onError: (error) => {
+    // Handle plugin-specific errors
+  }
+};
+
+// Register and initialize
+kernel.register(loggerPlugin);
+await kernel.init();
+
+// Check plugin state
+const state: PluginState = kernel.getPluginState('logger');
+// 'registered' | 'initializing' | 'active' | 'error' | 'destroyed'
+
+// Late registration (auto-initialized if kernel is ready)
+kernel.register(anotherPlugin); // onInit called automatically
+
+// Scoped event bus (auto-cleanup on unregister)
+const bus = kernel.getScopedEventBus('logger');
+bus.on('user:login', handler); // Removed when plugin unregistered
+
+// Cleanup
+await kernel.unregister('logger'); // async, calls onDestroy
+await kernel.destroy(); // destroys all plugins`;
+
 const plugins = [
   {
     id: 'deep',
@@ -122,6 +175,13 @@ const plugins = [
     import: '@oxog/utils/transform',
     description: 'Object and function transformation utilities including composition and pipeline.',
     code: transformPluginCode,
+  },
+  {
+    id: 'kernel',
+    name: 'Kernel (Plugin System)',
+    import: '@oxog/utils',
+    description: 'Micro-kernel for building extensible applications with plugin lifecycle management, dependency resolution, scoped events, and automatic cleanup.',
+    code: kernelPluginCode,
   },
 ];
 
